@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Trained model
+*.pkl
+
+
+data_syn
+
+# Secrets
+.env
+
+# VS Code
+.vscode/
