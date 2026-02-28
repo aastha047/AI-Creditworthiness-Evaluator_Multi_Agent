@@ -30,16 +30,20 @@ Prediction is generated via:
 predict_proba(... )[:, 1]
 
 🚀 Quick Start
+
 1️⃣ Upload Dataset(or any of the same columns)
+
 
 synthetic_credit_data.csv
 
 upload a CSV/XLSX via Streamlit UI.
 
 2️⃣ Train Model (Optional)
+
 python train_model.py
 
 3️⃣ Launch Streamlit App
+
 streamlit run app.py
 
 Upload dataset → View scores → View decisions → View explanations → Download results
@@ -53,6 +57,7 @@ The model predicts:
 prob_default = predict_proba(... )[:, 1]
 
 2️⃣ Simple Legacy Score (0–1000)
+
 score = int((1 - prob_default) * 1000)
 
 Range:
@@ -77,6 +82,7 @@ Default Parameters:
 - base_prob = 0.02
 
 Meaning:
+
 A 2% default probability maps to score 600.
 
 🏛️ Decision Logic
