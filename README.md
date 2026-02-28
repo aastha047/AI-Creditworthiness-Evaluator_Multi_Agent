@@ -71,8 +71,11 @@ Implements industry-standard scorecard logic via prob_to_score_card in scoring_a
 
 Formula:
 B = PDO / ln(2)
+
 odds_bad = p / (1 - p)
+
 odds_ref = base_prob / (1 - base_prob)
+
 score = base_score + B * ln(odds_ref / odds_bad)
 
 Default Parameters:
@@ -82,7 +85,6 @@ Default Parameters:
 - base_prob = 0.02
 
 Meaning:
-
 A 2% default probability maps to score 600.
 
 🏛️ Decision Logic
