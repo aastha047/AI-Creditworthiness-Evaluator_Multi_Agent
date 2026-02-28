@@ -1,69 +1,166 @@
+AI Creditworthiness Evaluator – Multi-Agent Agentic AI System
+
+A modular, explainable credit risk evaluation system built using a multi-agent architecture, machine learning, SHAP-based interpretability, and scorecard transformation logic.
+
+This system trains on the UCI Default of Credit Card Clients dataset and allows user-uploaded data for automated credit scoring, decisioning, and explanation.
+
+🏗️ Architecture Overview
+
+The system follows a structured multi-agent design:
+
+Planner Agent – Orchestrates execution flow
+
+Data Agent – Preprocesses and validates datasets
+
+Scoring Agent – Generates default probabilities
+
+Decision Agent – Converts probabilities into APPROVE / REVIEW / REJECT
+
+Explain Agent – Produces SHAP-based and LLM-powered explanations
+
+Feedback Agent – Logs scoring events (audit-ready)
+
+This modular structure improves transparency, maintainability, and scalability.
+
+🧠 Model Details
+
+Algorithm: RandomForestClassifier
+
+Trees: 300
+
+Max Depth: 12
+
+Accuracy: ~81.7%
+
+Output: Probability of default (binary classification)
+
+Prediction is generated via:
+
+predict_proba(... )[:, 1]
+
+🚀 Quick Start
+1️⃣ Place Dataset
+
+Put:
+
+default_of_credit_card_clients.xls
 
 
-# AI Creditworthiness Evaluator (Agentic AI)
+in the repository root
+(or upload a CSV/XLSX via Streamlit UI).
 
-Train on the UCI dataset and allow user uploads for credit scoring and explanations.
-
-## Quick Start
-1. Place the dataset `default_of_credit_card_clients.xls` (or another CSV/XLSX) in the repository root.
-2. Train the model (optional):
-
-```powershell
+2️⃣ Train Model (Optional)
 python train_model.py
-```
 
-3. Launch the Streamlit app:
-
-```powershell
+3️⃣ Launch Streamlit App
 streamlit run app.py
-```
 
-4. Upload a CSV or Excel dataset in the app and view scores, explanations and decisions.
 
-**Scoring Formula & Configuration**
+Upload dataset → View scores → View decisions → View explanations → Download results
 
-- **Model Output (probability):** The model predicts the probability of default (`prob_default`) using `predict_proba(... )[:, 1]` (see `scoring_agent.py`).
+📊 Scoring Formula & Scorecard Mapping
+1️⃣ Model Output (Probability)
 
-- **Simple Legacy Score (0–1000):** Earlier code mapped the probability to a score using:
+The model predicts:
 
-   ```python
-   score = int((1 - prob_default) * 1000)
-   ```
+prob_default = predict_proba(... )[:, 1]
 
-   This yields a score from ~0 (worst) to 1000 (best).
+2️⃣ Simple Legacy Score (0–1000)
+score = int((1 - prob_default) * 1000)
 
-- **Recommended Scorecard (Odds-to-Points):** The repository also implements a standard scorecard mapping that transforms probability into log-odds and then into points using a "Points-to-Double-Odds" (PDO) parameter. This is implemented as `prob_to_score_card` in `scoring_agent.py`.
 
-   Formula used in code:
+Range:
 
-   - B = PDO / ln(2)
-   - odds_bad = p / (1 - p)
-   - odds_ref = base_prob / (1 - base_prob)
-   - score = base_score + B * ln(odds_ref / odds_bad)
+0 → Highest Risk
 
-   Defaults in code: `base_score=600`, `pdo=20`, `base_prob=0.02`. With these defaults, a 2% default probability maps to score 600.
+1000 → Lowest Risk
 
-- **Decision Logic:** Decisions (APPROVE / MANUAL_REVIEW / REJECT) are made from the raw predicted probability `p` using thresholds computed in `app.py` from the predictions' mean and standard deviation. The decision mapping is implemented in `decision_agent.py`.
+3️⃣ Recommended Scorecard (Odds-to-Points)
 
-## Customize Score Mapping
+Implements industry-standard scorecard logic via prob_to_score_card in scoring_agent.py.
 
-- Change parameters where `prob_to_score_card` is called in `app.py` if you want a different anchor or sensitivity:
+Formula:
+B = PDO / ln(2)
+odds_bad = p / (1 - p)
+odds_ref = base_prob / (1 - base_prob)
+score = base_score + B * ln(odds_ref / odds_bad)
 
-   - `base_score` — reference score at `base_prob` (default 600).
-   - `pdo` — points to double odds (commonly 20 or 40).
-   - `base_prob` — reference default probability (e.g., 0.02).
+Default Parameters:
 
-- Example (Python):
+base_score = 600
 
-   ```python
-   from scoring_agent import prob_to_score_card
-   score = prob_to_score_card(0.12, base_score=650, pdo=20, base_prob=0.05)
-   print(score)
-   ```
+pdo = 20
 
-## Next Steps (optional)
+base_prob = 0.02
 
-- I can add interactive Streamlit controls so users can change `base_score`, `pdo`, and `base_prob` from the UI.
-- I can implement a fully auditable scorecard pipeline (WOE binning + logistic regression) that produces per-feature points and a transparent scoring table — recommended for production.
+Meaning:
+A 2% default probability maps to score 600.
 
-If you want either of those, tell me which and I will implement it.
+🏛️ Decision Logic
+
+Final decision categories:
+
+APPROVE
+
+MANUAL_REVIEW
+
+REJECT
+
+Thresholds are dynamically computed in app.py using:
+
+Mean probability
+
+Standard deviation
+
+Mapping logic implemented in decision_agent.py.
+
+⚙️ Customizing Score Mapping
+
+You can adjust sensitivity:
+
+base_score
+
+pdo
+
+base_prob
+
+Example:
+
+from scoring_agent import prob_to_score_card
+
+score = prob_to_score_card(
+    0.12,
+    base_score=650,
+    pdo=20,
+    base_prob=0.05
+)
+
+print(score)
+
+📦 Tech Stack
+
+Python
+
+scikit-learn
+
+SHAP
+
+Streamlit
+
+SQLite
+
+pandas / numpy
+
+Pickle serialization
+
+🔎 Explainability
+
+SHAP-based feature attribution
+
+Top contributing factors displayed
+
+Optional LLM narrative explanation
+
+Full audit trail support
+
+Designed for regulatory transparency and responsible AI.
